@@ -8,10 +8,7 @@ import re
 import threading
 import time
 import struct
-
-directory = '/tmp/inotifyCtrlShift'
-if not os.path.exists(directory):
-    os.makedirs(directory)
+import xkbgroup
 
 class LeftCtrlShiftKeyEventClass(object):
   def __init__(self):
@@ -22,6 +19,7 @@ class LeftCtrlShiftKeyEventClass(object):
     self.leftShiftReleased = False
     self.numLeftCtrlCode = 29
     self.numLeftShiftCode = 42
+    self.xkb = xkbgroup.XKeyboard()
     signal.signal(signal.SIGINT, self.cleanup)
 
     with open('/proc/bus/input/devices') as f:
@@ -47,10 +45,19 @@ class LeftCtrlShiftKeyEventClass(object):
     self.leftShiftReleased = False
 
   def switch_layout(self):
-      print("switch_layout")
+      print("Switching layout..")
       self.resetCtrlShift()
-      with open("/tmp/inotifyCtrlShift/caught", "w") as f:
-          f.write("")
+      layouts = self.xkb.groups_names
+      print(layouts)
+      current_layout = self.xkb.group_name
+      layouts.remove(current_layout)
+      print(layouts)
+      if len(layouts) != 1:
+        print("err: ", layouts)
+      next_layout = layouts.pop()
+      print("Current layout: ", current_layout)
+      print("Next layout: ", next_layout)
+      self.xkb.group_name = next_layout
 
   def read_events(self, dev_event_file):
     print("Listening for kbd events on dev_event_file=" + str(dev_event_file))
