@@ -2,7 +2,6 @@
 
 # source https://blog.robertelder.org/detect-keyup-event-linux-terminal/
 
-import os
 import signal
 import re
 import threading
@@ -90,7 +89,6 @@ class LeftCtrlShiftKeyEventClass(object):
 
         if self.leftCtrlPressed and self.leftCtrlReleased and self.leftShiftPressed and self.leftShiftReleased:
             self.switch_layout()
-
 
 
 a = LeftCtrlShiftKeyEventClass()
